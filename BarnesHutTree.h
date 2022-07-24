@@ -1,6 +1,5 @@
 //
-//  BarnesHutTree.hpp
-//  QuadTreeIllustrator
+//  BarnesHutTree.h
 //
 //  Created by Ben F. Maier on 09.07.22.
 //
@@ -10,7 +9,6 @@
 
 #include <ofVec2f.h> // comment this out if you want to use this codebase in openFrameworks
 // #include <ofMain.h> //comment this in if you want to use this codebase in openFrameworks 
-#include <stdio.h>
 #include <vector>
 
 const int _NW = 0;
@@ -27,7 +25,7 @@ class SubTrees
 {
   public:
     size_t occupied_trees;
-    std::vector< BarnesHutTree* > trees;
+    vector< BarnesHutTree* > trees;
 
     SubTrees(){
 
