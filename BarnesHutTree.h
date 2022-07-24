@@ -172,8 +172,9 @@ class Extent
             return get_SE();
         } else if (q==_SW) {
             return get_SW();
+        } else {
+            throw range_error("Invalid quadrant id was passed (can only be 0, 1, 2, or 3).");
         }
-        return;
     }
     
     // return the north-western quadrant
@@ -414,7 +415,7 @@ class BarnesHutTree
         
         // if this tree node carries no data and no subtrees (i.e. is empty),
         // put the position and the mass inside this node and return
-        if (this_pos == NULL && subtrees.occupied_trees == 0){
+        if (is_empty()){
             this_pos = &new_pos;
             current_data_quadrant = candidate_quad;
             this_mass = mass;
@@ -425,7 +426,7 @@ class BarnesHutTree
         
         // if this tree node carries no data but has subtrees (i.e. is an internal node of the tree),
         // find the subtree/quadrant this position would lie in and insert it in there
-        if (this_pos == NULL && subtrees.occupied_trees > 0){
+        if (is_internal_node()){
             
             BarnesHutTree* tree_to_insert_to = subtrees.trees[candidate_quad];
             
@@ -446,7 +447,7 @@ class BarnesHutTree
         // create a new tree in the quadrant of the old data, insert the old data into the subtree,
         // reset all data pointers of this former leaf node, then start the procedure
         // to insert the new data into this tree again
-        if (this_pos != NULL && subtrees.occupied_trees == 0){
+        if (is_leaf()) {
             
             // create subtree to which the new data will be inserted and insert new data
             BarnesHutTree* new_tree = new BarnesHutTree(geom.get_quadrant(current_data_quadrant), this);
@@ -462,6 +463,18 @@ class BarnesHutTree
             // insert the new data into this tree, which is now an internal node 
             insert(new_pos, mass, id);
         }
+    }
+
+    bool is_leaf(){
+        return (this_pos != NULL && subtrees.occupied_trees == 0);
+    }
+
+    bool is_internal_node(){
+        return (this_pos == NULL && subtrees.occupied_trees > 0);
+    }
+
+    bool is_empty(){
+        return (this_pos == NULL && subtrees.occupied_trees == 0);
     }
     
 };
