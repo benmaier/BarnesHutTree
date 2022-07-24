@@ -122,7 +122,7 @@ int main(int argc, char *argv[]){
          << "stddev_relative_force"  << ","
          << "median_relative_force" << ","
          << "lower_25_relative_force" << ","
-         << "upper_75_relative_force"
+         << "upper_75_relative_force" << ","
          << "mean_time_mus" << "," 
          << "stddev_time_ns"  << ","
          << "median_time_ns" << ","
