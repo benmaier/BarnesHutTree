@@ -5,6 +5,7 @@
 #define minimal_clone_ofVec2f_h
 
 #include <iostream>
+#include <math.h>
 
 using namespace std;
 
@@ -13,6 +14,13 @@ class ofVec2f {
     public:
 
         float x, y;
+
+        ofVec2f()
+        {
+            x = 0.f;
+            y = 0.f;
+        }
+
 
         ofVec2f(const float &_x,
                 const float &_y
@@ -31,6 +39,8 @@ class ofVec2f {
 
         friend ostream& operator<<(ostream& os, const ofVec2f& vec);
         friend istream& operator>>(istream& is, const ofVec2f& vec);
+
+        float length() const;
 };
 
 
@@ -79,6 +89,11 @@ inline istream& operator>>(istream& is, ofVec2f& vec) {
 	is.ignore(2);
 	is >> vec.y;
 	return is;
+}
+
+
+inline float ofVec2f::length() const {
+	return (float)sqrt( x*x + y*y );
 }
 
 #endif /* minimal_clone_ofVec2f_h */
