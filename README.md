@@ -40,7 +40,7 @@ The class `ofVec2f` was adapted from the [openFrameworks library](https://github
 
 ### Simple tree
 
-see [01\_tree\_example](./01_tree_example).
+see [01\_tree\_example](./01_tree_example/main.cpp).
 
 
 ### ofVec2f
