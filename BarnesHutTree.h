@@ -454,12 +454,36 @@ class BarnesHutTree
     void compute_force(
                  const ofVec2f &pos,
                  ofVec2f &force,
-                 const float &mass = 1.f,
                  float theta = 0.5,
-                 const float &gravitational_constant = 1.f,
-                 BarnesHutTree* tree = this
-            ){
+                 BarnesHutTree* tree = NULL
+            )
+    {
 
+        if (tree == NULL)
+            tree = this;
+
+        if (tree->is_leaf())
+        {
+            ofVec2f d = *(tree->this_pos) - pos;
+            float norm = d.length();
+            if (norm > 0)
+                force += (tree->total_mass) * d/pow(norm,3);
+        }
+        else
+        {
+            ofVec2f _r = tree->center_of_mass;
+            ofVec2f d = (_r) - pos;
+            float s = sqrt(tree->geom.width() * tree->geom.height()); // geometric mean of box dimensions
+            float norm = d.length();
+            if ((s/norm) < theta)
+                force += (tree->total_mass) * d/pow(norm,3);
+            else
+                for(auto &subtree: tree->subtrees.trees){
+                    if (subtree != NULL){
+                        compute_force(pos, force, theta, subtree);
+                    }
+                }
+        }
     }
     
 };
