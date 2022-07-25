@@ -38,6 +38,11 @@ The class `ofVec2f` was adapted from the [openFrameworks library](https://github
 
 ## Examples
 
+### Simple tree
+
+see [01\_tree\_example](./01_tree_example).
+
+
 ### ofVec2f
 
 ```cpp
