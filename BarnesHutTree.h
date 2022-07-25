@@ -309,33 +309,23 @@ class BarnesHutTree
 
   public:
 
-    ofVec2f* this_pos; // a pointer to the vector of the mass point that this tree carries.
-                       // (this pointer only contains data if it's a leaf node, otherwise it's NULL)
-    int this_id;       // integer id of the data point in this node
-    float this_mass;   // the mass of the data point in this node
-    float total_mass;  // total mass of all data points that are contained in this node
-                       // xor in all subtrees of this node
-    ofVec2f total_mass_position; // total mass-position of all data points that are contained
-                                 // in this node xor all subtrees of this node
-    ofVec2f center_of_mass; // center of mass of all data points in this node
-    size_t number_of_contained_points; // the total number of all data points that are contained
-                                       // in this node xor in all its subtrees
-    int current_data_quadrant; // the quadrant the current data lies in
-    Extent geom;           // the geometry of the box of this node
-    SubTrees subtrees;     // the subtrees of this node
-    BarnesHutTree* parent; // the parent of this node (if root, parent is NULL)
+    ofVec2f* this_pos = NULL; // a pointer to the vector of the mass point that this tree carries.
+                              // (this pointer only contains data if it's a leaf node, otherwise it's NULL)
+    int this_id = -1;         // integer id of the data point in this node
+    float this_mass = 0.f;    // the mass of the data point in this node
+    float total_mass = 0.f;   // total mass of all data points that are contained in this node
+                              // xor in all subtrees of this node
+    ofVec2f total_mass_position = ofVec2f(0.f, 0.f); // total mass-position of all data points that are contained
+                                           // in this node xor all subtrees of this node
+    ofVec2f center_of_mass = ofVec2f(0.f, 0.f);      // center of mass of all data points in this node
+    size_t number_of_contained_points = 0; // the total number of all data points that are contained
+                                           // in this node xor in all its subtrees
+    int current_data_quadrant = -1; // the quadrant the current data lies in
+    Extent geom;                    // the geometry of the box of this node
+    SubTrees subtrees;              // the subtrees of this node
+    BarnesHutTree* parent = NULL;   // the parent of this node (if root, parent is NULL)
 
-    // create an empty root node
     BarnesHutTree(){
-        this_pos = NULL;
-        this_id = -1;
-        this_mass = 0.f;
-        total_mass = 0.f;
-        total_mass_position = ofVec2f(0.f,0.f);
-        center_of_mass = ofVec2f(0.f,0.f);
-        number_of_contained_points = 0;
-        parent = NULL;
-        current_data_quadrant = -1;
     };
     
     // create a root node that corresponds to a box and might have
@@ -344,65 +334,23 @@ class BarnesHutTree
                   BarnesHutTree* _parent = NULL
                   )
     {
-        this_pos = NULL;
-        this_id = -1;
         parent = _parent;
-        total_mass = 0.f;
-        this_mass = 0.f;
-        total_mass_position = ofVec2f(0.f,0.f);
-        center_of_mass = ofVec2f(0.f,0.f);
-        number_of_contained_points = 0;
-        current_data_quadrant = -1;
-        geom = Extent(_geom);
+        geom = _geom;
     };
     
     // recursively create a whole tree from a list of positions,
     // masses will be set to m = 1 for every data point
     BarnesHutTree(vector < ofVec2f > & positions){
-        this_pos = NULL;
-        this_id = -1;
-        parent = NULL;
-        total_mass = 0.f;
-        this_mass = 0.f;
-        total_mass_position = ofVec2f(0.f,0.f);
-        center_of_mass = ofVec2f(0.f,0.f);
-        number_of_contained_points = 0;
-        current_data_quadrant = -1;
         geom = Extent(positions);
-        
-        int i = 0;
-        for(auto &pos: positions){
-            insert(pos,1.0,i);
-            ++i;
-        }
+        insert_positions(positions);
     }
 
     // recursively create a whole tree from a list of positions and masses
     BarnesHutTree(vector < ofVec2f > & positions,
                   vector < float > & masses
                   ){
-        this_pos = NULL;
-        this_id = -1;
-        parent = NULL;
-        total_mass = 0.f;
-        this_mass = 0.f;
-        total_mass_position = ofVec2f(0.f,0.f);
-        center_of_mass = ofVec2f(0.f,0.f);
-        number_of_contained_points = 0;
-        current_data_quadrant = -1;
         geom = Extent(positions);
-        
-        // check that every point has a mass
-        if (masses.size() != positions.size())
-            throw length_error("masses and positions must be of equal length");
-        
-        auto mass = masses.begin();
-        int i = 0;
-        for(auto &pos: positions){
-            insert(pos, *mass, i);
-            ++mass;
-            ++i;
-        }
+        insert_positions_and_masses(positions, masses);
     }
 
     // insert a data point into the tree, including a mass and an
@@ -465,6 +413,32 @@ class BarnesHutTree
         }
     }
 
+    void insert_positions(vector < ofVec2f > & positions){
+        int i = 0;
+        for(auto &pos: positions){
+            insert(pos,1.0,i);
+            ++i;
+        }
+    }
+
+    void insert_positions_and_masses(
+                  vector < ofVec2f > & positions,
+                  vector < float > & masses
+                  )
+    {
+        // check that every point has a mass
+        if (masses.size() != positions.size())
+            throw length_error("masses and positions must be of equal length");
+        
+        auto mass = masses.begin();
+        int i = 0;
+        for(auto &pos: positions){
+            insert(pos, *mass, i);
+            ++mass;
+            ++i;
+        }
+    }
+
     bool is_leaf(){
         return (this_pos != NULL && subtrees.occupied_trees == 0);
     }
@@ -475,6 +449,17 @@ class BarnesHutTree
 
     bool is_empty(){
         return (this_pos == NULL && subtrees.occupied_trees == 0);
+    }
+
+    void compute_force(
+                 const ofVec2f &pos,
+                 ofVec2f &force,
+                 const float &mass = 1.f,
+                 float theta = 0.5,
+                 const float &gravitational_constant = 1.f,
+                 BarnesHutTree* tree = this
+            ){
+
     }
     
 };
