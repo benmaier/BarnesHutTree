@@ -1,6 +1,6 @@
 # BarnesHutTree
 
-Simple C++-11 implementation for 2D Barnes-Hut Trees. Based on openFrameworks syntax, but usable without openFrameworks. Implemented for `float`, but easily adaptable to `double` by replacing types (specifically didn't use templates to be more beginner-friendly).
+Simple C++-11 implementation for 2D Barnes-Hut trees. Based on openFrameworks syntax, but usable without openFrameworks. Implemented for `float`, but easily adaptable to `double` by replacing types (specifically didn't use templates to be more beginner-friendly).
 
 Implemented after ["The Barnes-Hut Algorithm"](http://arborjs.org/docs/barnes-hut) by Tom Ventimiglia, Kevin Wayne and Christian Swinehart, which is an adaption of ["Barnes-Hut Galaxy Simulator"](https://www.cs.princeton.edu/courses/archive/fall03/cs126/assignments/barnes-hut.html) by Tom Ventimiglin and Kevin Wayne.
 
@@ -34,7 +34,6 @@ This project is licensed under the [MIT License](https://github.com/benmaier/epi
 
 The class `ofVec2f` was adapted from the [openFrameworks library](https://github.com/openframeworks/openFrameworks/blob/master/libs/openFrameworks/math/ofVec2f.h) under the [MIT License](https://github.com/openframeworks/openFrameworks/blob/master/LICENSE.md).
 
-![fixedpoints](https://github.com/benmaier/epipack/raw/master/img/fixed_points.png)
 
 ## Usage
 
@@ -265,6 +264,8 @@ void scan_tree(BarnesHutTree* node){
 
 ### Compute force
 
+See [02\_force\_example](./02_force_example/main.cpp).
+
 ```cpp
 void compute_force(
                  ofVec2f &force,
@@ -306,7 +307,57 @@ void compute_force(
 
 ### Generate data to draw tree as boxes
 
+See [07\_draw\_boxes](./07_draw_boxes/main.cpp).
+
+```cpp
+void scan_tree(BarnesHutTree* node){
+
+    if (node->is_leaf()){
+        cout << (*(node->this_pos)).x << ","
+             << (*(node->this_pos)).y << ","
+             << "0,0" << endl;
+    }
+    if (node->is_internal_node() || node->is_leaf()){
+        cout << (node->geom).left() << ","
+             << (node->geom).bottom() << ","
+             << (node->geom).width() << ","
+             << (node->geom).height()
+             << endl;
+
+        for(int i=0; i<4; ++i){
+            if ((node->subtrees).trees[i] != NULL)
+                scan_tree((node->subtrees).trees[i]);
+        }
+    }
+}
+
+```
+
+Then generate csv-data as
+
+```cpp
+cout << "x,y,w,h" << endl;
+scan_tree(&tree);
+```
+
+Plot with Python script in [07\_draw\_boxes](./07_draw_boxes/main.cpp).
+
+![pointsinboxes](https://github.com/benmaier/BarnesHutTree/raw/main/07_draw_boxes/boxes.png)
+
+
+
+### Test the accuracy and duration of force computation depending on theta
+
+See [05\_theta\_scan\_statistics](./05_theta_scan_statistics/).
+
+Testing (i) how accurate and (ii) how fast the computation of force is on a single point,
+depending on the `theta`-parameter.
+
+![accuracy-and-time](https://github.com/benmaier/BarnesHutTree/raw/main/05_theta_scan_statistics/accuracy_and_time.png)
+
 ### ofVec2f
+
+See [00\_vector\_example](./00_vector_example//main.cpp).
 
 ```cpp
 # include <ofVec2f.h>
