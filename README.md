@@ -225,7 +225,7 @@ int main(int argc, char *argv[]){
 }
 ```
 
-### Simple tree traversal
+### Simple tree traversal and data access
 
 See [01\_tree\_example](./01_tree_example/main.cpp).
 
@@ -263,6 +263,48 @@ void scan_tree(BarnesHutTree* node){
 }
 ```
 
+### Compute force
+
+```cpp
+void compute_force(
+                 ofVec2f &force,
+                 const ofVec2f &pos,
+                 BarnesHutTree* tree,
+                 float theta,
+                 const float &mass,
+                 const float &gravitational_constant
+                 )
+{
+    if (tree == NULL) return;
+
+    auto _r = tree->this_pos;
+
+    if (tree->is_leaf())
+    {
+        ofVec2f d = *(tree->this_pos) - pos;
+        float norm = d.length();
+        if (norm > 0)
+            force += gravitational_constant * mass * (tree->total_mass) * d/pow(norm,3);
+    }
+    else
+    {
+        ofVec2f __r = tree->center_of_mass;
+        ofVec2f d = (__r) - pos;
+        float s = sqrt(tree->geom.width() * tree->geom.height()); // geometric mean of box dimensions
+        float norm = d.length();
+        if ((s/norm) < theta)
+            force += gravitational_constant * mass * (tree->total_mass) * d/pow(norm,3);
+        else
+            for(auto &subtree: tree->subtrees.trees){
+                if (subtree != NULL){
+                    compute_force(force, pos, subtree, theta, mass, gravitational_constant);
+                }
+            }
+    }
+}
+```
+
+### Generate data to draw tree as boxes
 
 ### ofVec2f
 

@@ -38,5 +38,7 @@ ax[3].set_xlabel('theta')
 
 fig.tight_layout()
 
+fig.savefig('accuracy_and_time.png')
+
 
 pl.show()
