@@ -65,3 +65,13 @@ int main(int argc, char *argv[]){
     cout << "ofVec2f tri(3.f, 4.f); tri.length() = " << tri.length() << endl;
 }
 ```
+
+```
+ofVec2f zero(); zero = 0, 0
+ofVec2f vec(1.f, 1.5f); vec = 1, 1.5
+vec += ofVec2f(3.f, 0.5f); vec = 4, 2
+vec = vec * 2; vec = 8, 4
+vec = (1/2.0) * vec; vec = 4, 2
+vec = vec / 2.f; vec = 2, 1
+ofVec2f tri(3.f, 4.f); tri.length() = 5
+```
