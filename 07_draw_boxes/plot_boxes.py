@@ -27,7 +27,6 @@ for i in iboxes:
     rect = Rectangle((x[i], y[i]), w[i], h[i])
     rects.append(rect)
 
-print(rects)
 patches = PatchCollection(rects,
                           alpha = 0.05,
                           edgecolor='k',
