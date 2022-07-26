@@ -232,7 +232,7 @@ See [01\_tree\_example](./01_tree_example/main.cpp).
 void scan_tree(BarnesHutTree* node){
 
     if (node->is_leaf()){
-        cout << "this node is a leaf and carries data with id = " << node->this_id
+        cout << "this node is a leaf and carries data with id = " << node->this_id 
              << " and position = " << *(node->this_pos)
              << endl << endl;
     }
@@ -244,9 +244,11 @@ void scan_tree(BarnesHutTree* node){
              << " occupied quadrants";
         if ((node->subtrees).occupied_trees > 0){
             cout << " (";
-            for(int i=0; i<4; ++i){
-                if ((node->subtrees).trees[i] != NULL)
+            int i = 0;
+            for(auto &subtree: node->subtrees.trees){
+                if (subtree != NULL)
                     cout << i << ", ";
+                ++i;
             }
             cout << ")" << endl;
         }
@@ -254,9 +256,9 @@ void scan_tree(BarnesHutTree* node){
         cout << "total mass = " << node->total_mass << endl;
         cout << endl;
 
-        for(int i=0; i<4; ++i){
-            if ((node->subtrees).trees[i] != NULL)
-                scan_tree((node->subtrees).trees[i]);
+        for(auto &subtree: node->subtrees.trees){
+            if (subtree != NULL)
+                scan_tree(subtree);
         }
     }
 }
@@ -324,9 +326,9 @@ void scan_tree(BarnesHutTree* node){
              << (node->geom).height()
              << endl;
 
-        for(int i=0; i<4; ++i){
-            if ((node->subtrees).trees[i] != NULL)
-                scan_tree((node->subtrees).trees[i]);
+        for(auto &subtree: (node->subtrees).trees){
+            if (subtree != NULL)
+                scan_tree(subtree);
         }
     }
 }

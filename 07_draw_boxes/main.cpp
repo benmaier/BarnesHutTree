@@ -18,9 +18,9 @@ void scan_tree(BarnesHutTree* node){
              << (node->geom).height()
              << endl;
 
-        for(int i=0; i<4; ++i){
-            if ((node->subtrees).trees[i] != NULL)
-                scan_tree((node->subtrees).trees[i]);
+        for(auto &subtree: (node->subtrees).trees){
+            if (subtree != NULL)
+                scan_tree(subtree);
         }
     }
 }

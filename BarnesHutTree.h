@@ -34,25 +34,35 @@ class SubTrees
         
         // therefore, all quadrant pointers point to nothing
         trees.clear();
-        trees.push_back(NULL);
-        trees.push_back(NULL);
-        trees.push_back(NULL);
-        trees.push_back(NULL);
     }
     
     ~SubTrees(){
         // delete all subtrees that were created in runtime
-        if (trees[3]) delete trees[3];
-        if (trees[2]) delete trees[2];
-        if (trees[1]) delete trees[1];
-        if (trees[0]) delete trees[0];
+        if (occupied_trees > 0){
+            for(int i=3; i>=0; --i)
+                if (trees[i]) delete trees[i];
+            trees.clear();
+        }
     }
     
     // add a new tree to one of the quadrants,
     // where iqad corresponds to the mapping above
     void add_tree(int iquad, BarnesHutTree* tree){
+        if (occupied_trees == 0){
+            for(int i=0; i<4; ++i)
+                trees.push_back(NULL);
+        }
         occupied_trees += 1;
         trees[iquad] = tree;
+    }
+
+    BarnesHutTree* get_subtree(int iquad){
+        if (iquad < 0 || iquad > 3)
+            throw range_error("The requested quadrant id was out of range [0,3].");
+        if (occupied_trees==0)
+            return NULL;
+        else
+            return trees[iquad];
     }
 };
 
@@ -376,7 +386,7 @@ class BarnesHutTree
         // find the subtree/quadrant this position would lie in and insert it in there
         if (is_internal_node()){
             
-            BarnesHutTree* tree_to_insert_to = subtrees.trees[candidate_quad];
+            BarnesHutTree* tree_to_insert_to = subtrees.get_subtree(candidate_quad);
             
             // if the candidate tree/quadrant is empty, create a new tree in this quadrant
             if (tree_to_insert_to == NULL){
