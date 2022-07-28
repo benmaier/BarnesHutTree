@@ -18,6 +18,9 @@ const int _NE = 1;
 const int _SE = 2;
 const int _SW = 3;
 
+// string representations of the quadrants
+const vector < string > _QUADS = {" (nw)", " (ne)", " (se)", " (sw)"};
+
 using namespace std;
 
 // reserve name to allow circular reference in class SubTrees
@@ -318,9 +321,6 @@ class BarnesHutTree
         // number of points that lie within this tree (box) increases by one
         number_of_contained_points++;
     }
-
-    // string representations of the quadrants
-    const vector < string > _QUADS = {" (nw)", " (ne)", " (se)", " (sw)"};
 
   public:
 
