@@ -176,6 +176,36 @@ tree.geom.width();
 tree.geom.height();
 ```
 
+### Tree string representation
+
+```cpp
+#include <sstream>
+#include <iostream>
+
+...
+
+ostringstream ss;
+tree.get_tree_str(ss)
+cout << ss;
+```
+
+Output:
+
+```
++- CM = 0.465625, 0.499375; M = 8; n = 8
+| +- (nw) 0 (0.2, 0.76)
+| +- (ne) CM = 0.638333, 0.795; M = 3; n = 3
+| | +- (nw) CM = 0.5775, 0.8275; M = 2; n = 2
+| | | +- (ne) 1 (0.635, 0.885)
+| | | +- (sw) 2 (0.52, 0.77)
+| | +- (se) 3 (0.76, 0.73)
+| +- (se) 7 (0.635, 0.12)
+| +- (sw) CM = 0.325, 0.243333; M = 3; n = 3
+| | +- (ne) 4 (0.48, 0.48)
+| | +- (se) 6 (0.395, 0.15)
+| | +- (sw) 5 (0.1, 0.1)
+```
+
 ## Examples
 
 ### Simple tree construction

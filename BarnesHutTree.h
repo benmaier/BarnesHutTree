@@ -10,6 +10,8 @@
 #include <ofVec2f.h> // comment this out if you want to use this codebase in openFrameworks
 // #include <ofMain.h> //comment this in if you want to use this codebase in openFrameworks 
 #include <vector>
+#include <string>
+#include <sstream>
 
 const int _NW = 0;
 const int _NE = 1;
@@ -317,6 +319,9 @@ class BarnesHutTree
         number_of_contained_points++;
     }
 
+    // string representations of the quadrants
+    const vector < string > _QUADS = {" (nw)", " (ne)", " (se)", " (sw)"};
+
   public:
 
     ofVec2f* this_pos = NULL; // a pointer to the vector of the mass point that this tree carries.
@@ -493,6 +498,35 @@ class BarnesHutTree
                         compute_force(pos, force, theta, subtree);
                     }
                 }
+        }
+    }
+
+    // recursively construct a string stream representation of the tree
+    void get_tree_str(
+                      ostringstream &ss,
+                      BarnesHutTree* node = NULL,
+                      string indent = "",
+                      string quad = ""
+                   ){
+
+        if (node == NULL)
+            node = this;
+        
+        ss << indent << "+-" << quad << " ";
+
+        if (node->is_leaf()){
+            ss << node->this_id  << " (" << *(node->this_pos) << ")" << endl;
+        }
+        if (node->is_internal_node()){
+            ss << "CM = " << node->center_of_mass << "; " << "M = " << node->total_mass << "; "
+               << "n = " << node->number_of_contained_points << endl;
+
+            int i = 0;
+            for(auto &subtree: node->subtrees.trees){
+                if (subtree != NULL)
+                    get_tree_str(ss,subtree,indent + "| ",_QUADS[i]);
+                ++i;
+            }
         }
     }
     
