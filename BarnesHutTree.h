@@ -1,7 +1,7 @@
 //
 //  BarnesHutTree.h
 //
-//  Created by Ben F. Maier on 09.07.22.
+//  Created by Ben F. Maier on 09.July.22.
 //
 
 #ifndef BarnesHutTree_h
@@ -9,6 +9,7 @@
 
 #include <ofVec2f.h> // comment this out if you want to use this codebase in openFrameworks
 // #include <ofMain.h> //comment this in if you want to use this codebase in openFrameworks 
+#include <tuple>
 #include <vector>
 #include <string>
 #include <sstream>
@@ -499,6 +500,84 @@ class BarnesHutTree
                     }
                 }
         }
+    }
+
+    void get_distances_to(
+                 const ofVec2f &pos,
+                 vector < pair < float, size_t > > &distances,
+                 const float &theta = 0.5,
+                 const bool &ignore_zero_distance = true,
+                 BarnesHutTree* tree = NULL
+            )
+    {
+        if (tree == NULL)
+            tree = this;
+        if (tree->is_leaf())
+        {
+            ofVec2f d = *(tree->this_pos) - pos;
+            float norm = d.length();
+            if ((norm > 0) || (!ignore_zero_distance))
+                distances.push_back(make_pair(norm, 1));
+        }
+        else
+        {
+            ofVec2f _r = tree->center_of_mass;
+            ofVec2f d = (_r) - pos;
+            float s = sqrt(tree->geom.width() * tree->geom.height()); // geometric mean of box dimensions
+            float norm = d.length();
+            if ((s/norm) < theta)
+                distances.push_back(make_pair(norm, (tree->number_of_contained_points)));
+            else
+                for(auto &subtree: tree->subtrees.trees){
+                    if (subtree != NULL){
+                        get_distances_to(pos, distances, theta, 
+                                         ignore_zero_distance,
+                                         subtree);
+                    }
+                }
+        }
+    }
+
+    vector < pair < float, size_t > > get_pairwise_distances(
+                 const float &theta = 0.5,
+                 const bool &ignore_zero_distance = true,
+                 vector < pair < float, size_t > > *distances = NULL,
+                 BarnesHutTree* node = NULL,
+                 BarnesHutTree* root = NULL
+            )
+    {
+        
+        vector < pair < float, size_t > > _distances;
+        if (distances == NULL)
+            distances = &_distances;
+        if (node == NULL)
+            node = this;
+        if (root == NULL)
+            root = this;
+
+        if (node->is_leaf()){
+            get_distances_to( *(node->this_pos),
+                              *distances,
+                              theta,
+                              ignore_zero_distance,
+                              root
+                              );
+        }
+        else
+        {
+            for(auto &subtree: node->subtrees.trees){
+                if (subtree != NULL)
+                    get_pairwise_distances(
+                                theta,
+                                ignore_zero_distance,
+                                distances,
+                                subtree,
+                                root
+                            );
+            }
+        }
+
+        return (*distances);
     }
 
     // recursively construct a string stream representation of the tree

@@ -2,9 +2,9 @@
 # include <BarnesHutTree.h>
 # include <iostream>
 # include <algorithm>
-#include <chrono>
-using namespace std::chrono;
+# include <chrono>
 
+using namespace std::chrono;
 using namespace std;
 
 int main(int argc, char *argv[]){
